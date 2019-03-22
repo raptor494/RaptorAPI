@@ -13,7 +13,7 @@ RaptorAPI is the base API for all of Raptor&apos;s 1.13.2 Spigot plugins.
 - `TypedList`, `TypedSet`, `TypedCollection`, and `TypedMap`, which provide runtime type-checking.
 - `PermissionBasedCommandHelpTopic`, which provides a different help topic conent based on whether the viewer has a permission or not.
 ### Maven
-I do not have a Maven repository for this set up yet, unfortunately. You&apos;ll have to download the jar from this repository&apos;s target folder, and add it like so:
+I do not have a Maven repository for this set up yet, unfortunately. You&apos;ll have to download the code, build the jar yourself, and add it like so:
 ```xml
 <dependency>
 	<groupId>com.raptor.plugins</groupId>
