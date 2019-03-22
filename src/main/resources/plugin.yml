@@ -1,0 +1,25 @@
+name: RaptorAPI
+main: com.raptor.plugins.api.RaptorAPI
+author: Raptor__
+version: 0.1
+api-version: 1.13
+
+permissions:
+  raptorapi.customitem:
+    description: Allows access to /customitem
+    default: op
+  minecraft.spawner.change:
+    description: Allows right-clicking spawners with spawn eggs to change the type of the spawner
+    default: op
+    
+commands:
+  customitem:
+    description: Give yourself a predefined custom item
+    usage: /<command> <name>
+    permission: raptorapi.customitem
+    permission-message: "\u00a7cYou do not have permission to perform this command."
+  customitems:
+    description: List predefined custom items
+    usage: /<command> [reload]
+    permission: raptorapi.customitem
+    permission-message: "\u00a7cYou do not have permission to perform this command."
