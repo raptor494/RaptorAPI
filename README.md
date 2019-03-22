@@ -11,7 +11,7 @@ RaptorAPI is the base API for all of Raptor&apos;s 1.13.2 Spigot plugins.
 - `ItemUtils.isSpawnEgg(Material)`, `ItemUtils.isBanner(Material)`, and `ItemUtils.isBannerOrShield(Material)`.
 - `StringUtils.format(BaseComponent, Object...)` which formats the JSON text using the {#} notation, where # is the argument index.
 - `TypedList`, `TypedSet`, `TypedCollection`, and `TypedMap`, which provide runtime type-checking.
-- `PermissionBasedCommandHelpTopic`, which provides a different help topic conent based on whether the viewer has a permission or not.
+- `PermissionBasedCommandHelpTopic`, which provides a different help topic content based on whether the viewer has a permission or not.
 ### Maven
 I do not have a Maven repository for this set up yet, unfortunately. You&apos;ll have to download the code, build the jar yourself, and add it like so:
 ```xml
