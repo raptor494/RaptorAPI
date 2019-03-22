@@ -26,7 +26,7 @@ import org.bukkit.util.ChatPaginator;
 import com.raptor.plugins.RCommand;
 import com.raptor.plugins.RaptorPlugin;
 
-public class RaptorAPI extends RaptorPlugin implements Listener {
+public final class RaptorAPI extends RaptorPlugin implements Listener {
 	private static RaptorAPI instance;
 	private static final String ITEMS_FOLDER = "items";
 	private File itemsFolder;
