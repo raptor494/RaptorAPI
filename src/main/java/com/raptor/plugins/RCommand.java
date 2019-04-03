@@ -25,6 +25,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import com.raptor.plugins.util.StringUtils;
+
 import net.md_5.bungee.api.ChatColor;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -111,10 +113,27 @@ public abstract class RCommand implements CommandExecutor, TabCompleter {
 				: Arrays.stream(options).filter(str -> str.startsWith(arg)).collect(Collectors.toList());
 	}
 	
+	public static List<String> stringsMatching(String arg, boolean ignoreCase, String... options) {
+		if(ignoreCase)
+			return arg.isEmpty()
+				? Arrays.asList(options)
+				: Arrays.stream(options).filter(str -> StringUtils.startsWithIgnoreCase(str, arg)).collect(Collectors.toList());
+		else
+			return stringsMatching(arg, options);
+	}
+	
 	public static List<String> stringsMatching(String arg, Collection<String> options) {
 		return arg.isEmpty()
 				? options instanceof List? (List<String>) options : options.stream().collect(Collectors.toList())
 				: options.stream().filter(str -> str.startsWith(arg)).collect(Collectors.toList());
+	}
+	
+	public static List<String> stringsMatching(String arg, boolean ignoreCase, Collection<String> options) {
+		if(ignoreCase)
+			return arg.isEmpty()
+				? options instanceof List? (List<String>) options : options.stream().collect(Collectors.toList())
+				: options.stream().filter(str -> StringUtils.startsWithIgnoreCase(str, arg)).collect(Collectors.toList());
+		else return stringsMatching(arg, options);
 	}
 	
 	public static List<String> stringsMatchingLastArg(String[] args, String... options) {
@@ -123,10 +142,22 @@ public abstract class RCommand implements CommandExecutor, TabCompleter {
 		else return stringsMatching(args[args.length-1], options);
 	}
 	
+	public static List<String> stringsMatchingLastArg(String[] args, boolean ignoreCase, String... options) {
+		if(args.length == 0)
+			return Arrays.asList(options);
+		else return stringsMatching(args[args.length-1], ignoreCase, options);
+	}
+	
 	public static List<String> stringsMatchingLastArg(String[] args, Collection<String> options) {
 		if(args.length == 0)
 			return options instanceof List? (List<String>) options : options.stream().collect(Collectors.toList());
 		else return stringsMatching(args[args.length-1], options);
+	}
+	
+	public static List<String> stringsMatchingLastArg(String[] args, boolean ignoreCase, Collection<String> options) {
+		if(args.length == 0)
+			return options instanceof List? (List<String>) options : options.stream().collect(Collectors.toList());
+		else return stringsMatching(args[args.length-1], ignoreCase, options);
 	}
 	
 	public static Player player(String name) {
@@ -134,11 +165,18 @@ public abstract class RCommand implements CommandExecutor, TabCompleter {
 			if(player != null) 
 				return player;
 		}
+		int longestName = 0;
+		Player mostLikely = null;
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
-			if(player.getDisplayName().regionMatches(true, 0, name, 0, name.length()))
-				return player;
+			String playerName = ChatColor.stripColor(player.getDisplayName());
+			if(playerName.regionMatches(true, 0, name, 0, name.length())) {
+				if(playerName.length() > longestName) {
+					longestName = playerName.length();
+					mostLikely = player;
+				}
+			}
 		}
-		return null;
+		return mostLikely;
 	}
 	
 	
@@ -323,7 +361,7 @@ public abstract class RCommand implements CommandExecutor, TabCompleter {
 		Stream<String> stream = Bukkit.getServer().getOnlinePlayers().stream()
 				.map(Player::getName);
 		if(!arg.isEmpty()) {
-			stream = stream.filter(name -> name.startsWith(arg));
+			stream = stream.filter(name -> StringUtils.startsWithIgnoreCase(name, arg));
 		}
 		return stream.collect(Collectors.toList());
 	}
@@ -332,7 +370,7 @@ public abstract class RCommand implements CommandExecutor, TabCompleter {
 		Stream<String> stream = Bukkit.getServer().getOnlinePlayers().stream()
 				.map(player -> ChatColor.stripColor(player.getDisplayName()));
 		if(!arg.isEmpty()) {
-			stream = stream.filter(name -> name.startsWith(arg));
+			stream = stream.filter(name -> StringUtils.startsWithIgnoreCase(name, arg));
 		}
 		return stream.collect(Collectors.toList());
 	}
@@ -343,10 +381,10 @@ public abstract class RCommand implements CommandExecutor, TabCompleter {
 		HashSet<String> names = new HashSet<>();
 		for(Player player : Bukkit.getServer().getOnlinePlayers()) {
 			String name = player.getName();
-			if(name.startsWith(arg))
+			if(StringUtils.startsWithIgnoreCase(name, arg))
 				names.add(name);
 			name = ChatColor.stripColor(player.getDisplayName());
-			if(name.startsWith(arg))
+			if(StringUtils.startsWithIgnoreCase(name, arg))
 				names.add(name);
 		}
 		return names.stream().collect(Collectors.toList());
@@ -455,7 +493,7 @@ public abstract class RCommand implements CommandExecutor, TabCompleter {
 			b.append("/").append(command);
 			start = 0;
 		}
-		for(int i = 0; i < position; i++) {
+		for(int i = start; i < position; i++) {
 			b.append(" \u00a77")
 			 .append(args[i]);
 		}
