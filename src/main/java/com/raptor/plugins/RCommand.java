@@ -18,12 +18,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.FluidCollisionMode;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
+import org.bukkit.util.RayTraceResult;
 
 import com.raptor.plugins.util.StringUtils;
 
@@ -499,5 +502,49 @@ public abstract class RCommand implements CommandExecutor, TabCompleter {
 		}
 		b.append("\u00a7c\u00a7o<--[HERE]");
 		return b.toString();
+	}
+	
+	public static List<String> tabCompleteBlockPosition(String[] args, Location location, int xpos_index) {
+		if(args.length < xpos_index)
+			return Collections.emptyList();
+		if(args.length == xpos_index) {
+			return Collections.singletonList(String.valueOf(location.getBlockX()));
+		}
+		if(args.length == xpos_index+1) {
+			return stringsMatching(args[xpos_index], String.valueOf(location.getBlockX()));
+		}
+		if(args.length == xpos_index+2) {
+			return stringsMatching(args[xpos_index+1], String.valueOf(location.getBlockY()));
+		}
+		if(args.length == xpos_index+3) {
+			return stringsMatching(args[xpos_index+2], String.valueOf(location.getBlockZ())); 
+		}
+		return Collections.emptyList();
+	}
+	
+	public static List<String> tabCompleteBlockPosition(String[] args, Player player, int xpos_index) {
+		RayTraceResult trace = player.rayTraceBlocks(5, FluidCollisionMode.NEVER);
+		if(trace.getHitBlock() == null) {
+			if(args.length >= xpos_index && args.length <= xpos_index+3)
+				return stringsMatching(args[args.length-1], "~");
+			return Collections.emptyList();
+		}
+		return tabCompleteBlockPosition(args, trace.getHitBlock().getLocation(), xpos_index);
+	}
+	
+	public static Location getLocation(Location relativeTo, String[] args, int xpos_index) {
+		String xstr = args[xpos_index];
+		String ystr = args[xpos_index+1];
+		String zstr = args[xpos_index+2];
+		return new Location(relativeTo.getWorld(), 
+				relativize(xstr, relativeTo.getX()),
+				relativize(ystr, relativeTo.getY()),
+				relativize(zstr, relativeTo.getZ()));
+	}
+	
+	private static double relativize(String str, double relative) {
+		if(str.startsWith("~"))
+			return relative + Double.parseDouble(str.substring(1));
+		return Double.parseDouble(str);
 	}
 }

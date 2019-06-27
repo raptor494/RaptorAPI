@@ -7,14 +7,14 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.bukkit.ChatColor;
+
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public final class StringUtils extends org.apache.commons.lang.StringUtils {
-	private StringUtils() {
-	}
 	
 	public static BaseComponent format(BaseComponent component, Object... args) {
 		boolean changed = false;		
@@ -287,4 +287,129 @@ public final class StringUtils extends org.apache.commons.lang.StringUtils {
     	}
     	return b.toString();
     }
+    
+ 	private static final Matcher PREFIX_COLOR = Pattern.compile("^(?i)(" + ChatColor.COLOR_CHAR + "[0-9A-FK-OR])+").matcher("");
+
+ 	public static String getPrefixColors(String str) {
+ 		if(PREFIX_COLOR.reset(str).find())
+ 			return PREFIX_COLOR.group();
+ 		
+ 		return "";
+ 	}
+ 	
+ 	private static final Matcher POSTFIX_COLOR = Pattern.compile("(?i)(" + ChatColor.COLOR_CHAR + "[0-9A-FK-OR])+$").matcher("");
+ 	
+ 	public static String getPostfixColors(String str) {
+ 		if(POSTFIX_COLOR.reset(str).find())
+ 			return POSTFIX_COLOR.group();
+ 		
+ 		return "";
+ 	}
+ 	
+ 	/**
+ 	 * @return {@code true} if the string contains the color code character, {@linkplain ChatColor#COLOR_CHAR}.
+ 	 */
+ 	public static boolean hasColor(String str) {
+		return str.indexOf(ChatColor.COLOR_CHAR) >= 0;
+	}
+ 	
+ 	/**
+ 	 * Converts an integer to it's Roman Numeral form.
+ 	 * Negative numbers get prefixed with a minus sign ('-').
+ 	 * Zero just returns {@code "0"}.
+ 	 * 
+ 	 * @param input the number to convert
+ 	 * @return the Roman numeral
+ 	 */
+ 	public static String toRomanNumerals(int input) {
+ 		if (input < 0)
+ 			return "-" + toRomanNumerals(-input);
+ 		switch (input) {
+ 		case 0:
+ 			return "0";
+ 		case 1:
+ 			return "I";
+ 		case 2:
+ 			return "II";
+ 		case 3:
+ 			return "III";
+ 		case 4:
+ 			return "IV";
+ 		case 5:
+ 			return "V";
+ 		case 6:
+ 			return "VI";
+ 		case 7:
+ 			return "VII";
+ 		case 8:
+ 			return "VIII";
+ 		case 9:
+ 			return "IX";
+ 		case 10:
+ 			return "X";
+ 		}
+ 		
+ 		if (input > 10000)
+ 			return Integer.toString(input);
+ 		
+ 		StringBuilder s = new StringBuilder();
+ 		
+ 		while (input >= 1000) {
+ 			s.append("M");
+ 			input -= 1000;
+ 		}
+ 		while (input >= 900) {
+ 			s.append("CM");
+ 			input -= 900;
+ 		}
+ 		while (input >= 500) {
+ 			s.append("D");
+ 			input -= 500;
+ 		}
+ 		while (input >= 400) {
+ 			s.append("CD");
+ 			input -= 400;
+ 		}
+ 		while (input >= 100) {
+ 			s.append("C");
+ 			input -= 100;
+ 		}
+ 		while (input >= 90) {
+ 			s.append("XC");
+ 			input -= 90;
+ 		}
+ 		while (input >= 50) {
+ 			s.append("L");
+ 			input -= 50;
+ 		}
+ 		while (input >= 40) {
+ 			s.append("XL");
+ 			input -= 40;
+ 		}
+ 		while (input >= 10) {
+ 			s.append("X");
+ 			input -= 10;
+ 		}
+ 		while (input >= 9) {
+ 			s.append("IX");
+ 			input -= 9;
+ 		}
+ 		while (input >= 5) {
+ 			s.append("V");
+ 			input -= 5;
+ 		}
+ 		while (input >= 4) {
+ 			s.append("IV");
+ 			input -= 4;
+ 		}
+ 		while (input >= 1) {
+ 			s.append("I");
+ 			input -= 1;
+ 		}
+ 		return s.toString();
+ 	}
+ 	
+ 	private StringUtils() {
+		throw new UnsupportedOperationException("StringUtils cannot be instantiated!");
+	}
 }
